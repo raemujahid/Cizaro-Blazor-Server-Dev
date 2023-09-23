@@ -1,0 +1,74 @@
+﻿@layout LoginLayout
+@page "/login"
+@using System.Text.Json;
+@using System.Text;
+@using Cizaro_Blazor_Server.Models;
+@inject ILocalStorageService _localstorage;
+@inject HttpClient Http
+@inject IConfiguration Configuration
+@inject IToastService toastService
+@inject NavigationManager NavigationManager
+
+<link href="custom-css/login.css" rel="stylesheet" />
+<PageTitle>Login</PageTitle>
+
+
+<div class="wrapper">
+    <div class="sct login">
+        <EditForm Model="user" OnSubmit="HandleLogin">
+            <h3>Member Login</h3>
+
+            <InputText type="text" name="userName" placeholder="User Name" @bind-Value="user.UserName" />
+            <InputText type="password" name="password" placeholder="Password" @bind-Value="user.Password" />
+            <div class="forgot-remember">
+                <label class="control control-checkbox">
+                    Remember me
+                    <input type="checkbox" />
+                    <div class="control_indicator"></div>
+                </label>
+                <div class="forgot">
+                    <a href="#">Forgot Password?</a>
+                </div>
+            </div>
+            <input type="submit" name="send" value="Send">
+            <p class="text-center">Sign up with<br><i class="fa fa-hand-o-down" aria-hidden="true"></i></p>
+        </EditForm>
+    </div>
+</div>
+
+
+@code {
+
+    
+
+    private User user = new User();
+    private async Task HandleLogin()
+    {
+  
+        try
+        {
+            //var content = new StringContent(JsonSerializer.Serialize(user), Encoding.UTF8, "application/json");
+            var response = await Http.PostAsJsonAsync("security/CreateToken", user);
+            if (response.IsSuccessStatusCode)
+            {
+                var responseData = await response.Content.ReadAsStringAsync();
+                await _localstorage.SetItemAsync("auth_token", responseData);
+                //var _token = await _localstorage.GetItemAsStringAsync("auth_token");
+                toastService.ShowSuccess("You are successsully login");
+                NavigationManager.NavigateTo("/");
+            }
+            else
+            {
+                toastService.ShowError("Server Error Occurs!");
+                NavigationManager.NavigateTo("/");
+            }
+           
+            
+        }
+        catch (Exception ex)
+        {
+            toastService.ShowError("Server Error Occurs!");
+        }
+
+    }
+}
