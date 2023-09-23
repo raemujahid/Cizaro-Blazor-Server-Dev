@@ -10,9 +10,11 @@
 
 <p>This component demonstrates fetching data from a service.</p>
 
-@if (forecasts == null)
+@if (loader)
 {
-    <p><em>Loading...</em></p>
+    <div class="loading">
+        <img src="images/loader.gif" />
+    </div>
 }
 else
 {
@@ -40,10 +42,15 @@ else
 }
 
 @code {
+    bool loader = false;
+
     private WeatherForecast[]? forecasts;
 
     protected override async Task OnInitializedAsync()
     {
+        loader = true;
+        await Task.Delay(5000);
+        loader = false;
         forecasts = await ForecastService.GetForecastAsync(DateOnly.FromDateTime(DateTime.Now));
     }
 }

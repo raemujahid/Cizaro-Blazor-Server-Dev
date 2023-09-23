@@ -13,6 +13,12 @@
 <link href="custom-css/login.css" rel="stylesheet" />
 <PageTitle>Login</PageTitle>
 
+@if (loader)
+{
+    <div class="loading">
+        <img src="images/loader.gif" />
+    </div>
+}
 
 <div class="wrapper">
     <div class="sct login">
@@ -39,8 +45,7 @@
 
 
 @code {
-
-
+    public bool loader = false;
 
     private User user = new User() { UserName = "APIUser1", Password = "APIKey123" };
     private async Task HandleLogin()
@@ -49,9 +54,11 @@
         try
         {
             //var content = new StringContent(JsonSerializer.Serialize(user), Encoding.UTF8, "application/json");
+            loader = true;
             var response = await Http.PostAsJsonAsync("security/CreateToken", user);
             if (response.IsSuccessStatusCode)
             {
+                loader = false;
                 var responseData = await response.Content.ReadAsStringAsync();
                 var responseObject = JsonSerializer.Deserialize<string>(responseData);
 
@@ -62,18 +69,20 @@
             }
             else
             {
+                loader = false;
                 if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
                 {
                     toastService.ShowWarning("Unauthorized Attempt!");
                 }
                 else
                 {
-                    toastService.ShowError("Server Error Occurs!");                                      
-                }               
+                    toastService.ShowError("Server Error Occurs!");
+                }
             }
         }
         catch (Exception ex)
         {
+            loader = false;
             toastService.ShowError("Server Error Occurs!");
         }
 
