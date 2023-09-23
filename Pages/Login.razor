@@ -39,12 +39,12 @@
 
 @code {
 
-    
+
 
     private User user = new User();
     private async Task HandleLogin()
     {
-  
+
         try
         {
             //var content = new StringContent(JsonSerializer.Serialize(user), Encoding.UTF8, "application/json");
@@ -59,11 +59,15 @@
             }
             else
             {
-                toastService.ShowError("Server Error Occurs!");
-                NavigationManager.NavigateTo("/");
+                if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+                {
+                    toastService.ShowWarning("Unauthorized Attempt!");
+                }
+                else
+                {
+                    toastService.ShowError("Server Error Occurs!");                                      
+                }               
             }
-           
-            
         }
         catch (Exception ex)
         {
