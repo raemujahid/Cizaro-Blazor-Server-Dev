@@ -11,7 +11,10 @@ builder.Services.AddServerSideBlazor();
 builder.Services.AddBlazoredToast();
 
 builder.Services.AddSingleton<WeatherForecastService>();
+
 builder.Services.AddScoped<IAuthService, AuthService>();
+
+builder.Services.AddSingleton<AppState>();
 var configVal = builder.Configuration.GetValue<string>("AppSettings:CizaroApiBaseUrl");
 builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(configVal) });
 

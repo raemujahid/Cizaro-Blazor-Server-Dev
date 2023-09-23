@@ -1,4 +1,9 @@
-﻿<div class="top-row ps-3 navbar navbar-dark" style="padding:45px;">
+﻿@using Cizaro_Blazor_Server.Services;
+@inject AppState AppState
+@implements IDisposable
+
+
+<div class="top-row ps-3 navbar navbar-dark" style="padding:45px;">
     <div class="container-fluid">
         <a class="navbar-brand" href="">Cizaro-Blazor-Server</a>
         <button title="Navigation menu" class="navbar-toggler" @onclick="ToggleNavMenu">
@@ -14,6 +19,7 @@
                 <span class="oi oi-home" aria-hidden="true"></span> Home
             </NavLink>
         </div>
+        <span class="side-nav-heading">@AppState.SelectedTopBarTab</span>
         <div class="nav-item px-3">
             <NavLink class="nav-link" href="counter">
                 <span class="oi oi-plus" aria-hidden="true"></span> Counter
@@ -28,6 +34,14 @@
 </div>
 
 @code {
+    protected override void OnInitialized()
+    {
+        AppState.OnChange += StateHasChanged;
+    }
+    public void Dispose()
+    {
+        AppState.OnChange -= StateHasChanged;
+    }
     private bool collapseNavMenu = true;
 
     private string? NavMenuCssClass => collapseNavMenu ? "collapse" : null;
@@ -36,4 +50,5 @@
     {
         collapseNavMenu = !collapseNavMenu;
     }
+   
 }

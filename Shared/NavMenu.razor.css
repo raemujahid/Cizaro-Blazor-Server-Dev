@@ -1,3 +1,12 @@
+.side-nav-heading {
+    color: white;
+    text-transform: capitalize;
+    position: relative;
+    left: 19px;
+    font-weight: bold;
+}
+}
+
 .navbar-toggler {
     background-color: rgba(255, 255, 255, 0.1);
 }
