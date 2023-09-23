@@ -2,6 +2,7 @@
 @page "/login"
 @using System.Text.Json;
 @using System.Text;
+@using Cizaro_Blazor_Server.DTO;
 @using Cizaro_Blazor_Server.Models;
 @inject ILocalStorageService _localstorage;
 @inject HttpClient Http
@@ -41,7 +42,7 @@
 
 
 
-    private User user = new User();
+    private User user = new User() { UserName = "APIUser1", Password = "APIKey123" };
     private async Task HandleLogin()
     {
 
@@ -52,8 +53,10 @@
             if (response.IsSuccessStatusCode)
             {
                 var responseData = await response.Content.ReadAsStringAsync();
-                await _localstorage.SetItemAsync("auth_token", responseData);
-                //var _token = await _localstorage.GetItemAsStringAsync("auth_token");
+                var responseObject = JsonSerializer.Deserialize<string>(responseData);
+
+                await _localstorage.SetItemAsync("auth_token", responseObject);
+                var _token = await _localstorage.GetItemAsStringAsync("auth_token");
                 toastService.ShowSuccess("You are successsully login");
                 NavigationManager.NavigateTo("/");
             }

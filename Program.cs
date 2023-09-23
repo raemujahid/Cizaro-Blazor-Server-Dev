@@ -1,6 +1,7 @@
 using Blazored.LocalStorage;
 using Blazored.Toast;
 using Cizaro_Blazor_Server.Data;
+using Cizaro_Blazor_Server.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddBlazoredLocalStorage();
@@ -10,6 +11,7 @@ builder.Services.AddServerSideBlazor();
 builder.Services.AddBlazoredToast();
 
 builder.Services.AddSingleton<WeatherForecastService>();
+builder.Services.AddScoped<IAuthService, AuthService>();
 var configVal = builder.Configuration.GetValue<string>("AppSettings:CizaroApiBaseUrl");
 builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(configVal) });
 

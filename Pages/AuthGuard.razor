@@ -1,0 +1,26 @@
+﻿@using Cizaro_Blazor_Server.Services;
+@inject IAuthService authService
+@inject NavigationManager navigationManager;
+@inject ILocalStorageService _localstorage;
+
+
+@code {
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+
+        // Call a function or execute code on page load
+        Task.Run(async () => await CheckAuth());
+    }
+
+    private async Task CheckAuth()
+    {
+        var auth_token = await _localstorage.GetItemAsStringAsync("auth_token");
+        if (string.IsNullOrEmpty(auth_token))
+        {
+            navigationManager.NavigateTo("/login");
+        }
+        
+    }
+
+}
