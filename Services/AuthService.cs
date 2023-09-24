@@ -1,5 +1,5 @@
 ﻿using Blazored.LocalStorage;
-
+using Cizaro_Blazor_Server.Services.Interfaces;
 
 namespace Cizaro_Blazor_Server.Services
 {

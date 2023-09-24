@@ -1,11 +1,25 @@
-﻿@using Cizaro_Blazor_Server.Services;
+﻿@using Cizaro_Blazor_Server.Core;
+@using Cizaro_Blazor_Server.DTO;
+@using Cizaro_Blazor_Server.Services;
+@using Cizaro_Blazor_Server.Services.Interfaces;
+@using Newtonsoft.Json;
+@using System.Net.Http.Headers;
 @inject AppState AppState
 @implements IDisposable
+@inject ILocalStorageService _localstorage;
+@inject HttpClient Http
+@inject IConfiguration Configuration
+@inject IToastService toastService
+@inject NavigationManager NavigationManager
+@inject IHttpService HttpService
+
 
 
 <div class="top-row ps-3 navbar navbar-dark" style="padding:45px;">
     <div class="container-fluid">
-        <a class="navbar-brand" href="">Cizaro-Blazor-Server</a>
+        <a class="navbar-brand" href="">
+            <img src="images/logo.png" class="logo-img" />
+        </a>
         <button title="Navigation menu" class="navbar-toggler" @onclick="ToggleNavMenu">
             <span class="navbar-toggler-icon"></span>
         </button>
@@ -14,41 +28,132 @@
 
 <div class="@NavMenuCssClass nav-scrollable" @onclick="ToggleNavMenu">
     <nav class="flex-column">
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
-                <span class="oi oi-home" aria-hidden="true"></span> Home
-            </NavLink>
-        </div>
-        <span class="side-nav-heading">@AppState.SelectedTopBarTab</span>
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="counter">
-                <span class="oi oi-plus" aria-hidden="true"></span> Counter
-            </NavLink>
-        </div>
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="fetchdata">
-                <span class="oi oi-list-rich" aria-hidden="true"></span> Fetch data
-            </NavLink>
-        </div>
+        <div class="side-nav-heading">@AppState.SelectedTopBarTab</div>
+        @{
+            if (AppState.SelectedTopBarTab == "reports")
+            {
+                foreach (var rptLayout in _reportLayout)
+                {
+                    <div class="nav-item px-3">
+                        <NavLink class="nav-link" href="@($"report/{rptLayout.report_id}")">
+                            <span class="oi oi-bar-chart" aria-hidden="true"></span> @rptLayout.report_name
+                        </NavLink>
+                    </div>
+                }
+            }
+            else if (AppState.SelectedTopBarTab == "dashboard")
+            {
+                foreach (var rptLayout in _dashboardLayout)
+                {
+                    <div class="nav-item px-3">
+                        <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
+                            <span class="oi oi-dashboard" aria-hidden="true"></span> @rptLayout.dashboard_name
+                        </NavLink>
+                    </div>
+                }
+            }
+
+        }
     </nav>
 </div>
 
+
 @code {
-    protected override void OnInitialized()
+    private bool collapseNavMenu = false;
+
+    private string bearer_token = string.Empty;
+
+    private bool isInitialized = false;
+
+    private string? NavMenuCssClass => collapseNavMenu ? "collapse" : null;
+
+    List<ReportLayout>? _reportLayout = new List<ReportLayout>();
+    List<DashboardLayout>? _dashboardLayout = new List<DashboardLayout>();
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        AppState.OnChange += StateHasChanged;
+        if (firstRender)
+        {
+            isInitialized = true;
+            var _token = await _localstorage.GetItemAsStringAsync("auth_token");
+            if (!string.IsNullOrEmpty(_token) && _token.Length >= 2)
+            {
+                bearer_token = _token.Substring(1, _token.Length - 2);
+            }
+
+            await GetReportLayout();
+            await GetDashboardLayout();
+        }
+    }
+    protected override  void OnInitialized()
+    {  
+        AppState.OnChange += StateHasChanged;      
     }
     public void Dispose()
     {
         AppState.OnChange -= StateHasChanged;
     }
-    private bool collapseNavMenu = true;
 
-    private string? NavMenuCssClass => collapseNavMenu ? "collapse" : null;
 
     private void ToggleNavMenu()
     {
         collapseNavMenu = !collapseNavMenu;
     }
-   
+    private async Task GetReportLayout()
+    {
+        if (isInitialized)
+        {
+            try
+            {
+
+                Http.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", bearer_token);
+                var response = await Http.GetAsync(APIEndPoints.ReportLayout);
+                if (response.IsSuccessStatusCode)
+                {
+                    string responseContent = await response.Content.ReadAsStringAsync();
+
+                    _reportLayout = Newtonsoft.Json.JsonConvert.DeserializeObject<ReportLayout[]>(responseContent)?.ToList();
+
+                }
+                else
+                {
+                    toastService.ShowError("Server Error Occurs!");
+                }
+            }
+            catch (Exception ex)
+            {
+                toastService.ShowError("Server Error Occurs!");
+            }
+        }
+
+
+
+    }
+    private async Task GetDashboardLayout()
+    {
+        if (isInitialized)
+        {
+            try
+            {
+                Http.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", bearer_token);
+                var response = await Http.GetAsync(APIEndPoints.DashboardLayout);
+                if (response.IsSuccessStatusCode)
+                {
+                    string responseContent = await response.Content.ReadAsStringAsync();
+
+                    _dashboardLayout = Newtonsoft.Json.JsonConvert.DeserializeObject<DashboardLayout[]>(responseContent)?.ToList();
+
+                }
+                else
+                {
+                    toastService.ShowError("Server Error Occurs!");
+                }
+            }
+            catch (Exception ex)
+            {
+                toastService.ShowError("Server Error Occurs!");
+            }
+        }
+
+    }
 }

@@ -1,0 +1,34 @@
+﻿@page "/report/{report_id}"
+@using Cizaro_Blazor_Server.DTO;
+
+<AuthGuard />
+<PageTitle>Report</PageTitle>
+
+
+<p>The Report Id:  @Report_Id</p>
+@code {
+    [Parameter]
+    public string Report_Id { get; set; } = string.Empty;
+
+    private string bearer_token = string.Empty;
+
+    private bool isInitialized = false;
+    ReportLayout? _reportDetail = new ReportLayout();
+
+
+    protected override async void OnParametersSet()
+    {
+        base.OnParametersSet();
+
+        await GetReportById();
+    }
+
+
+    private async Task GetReportById()
+    {
+
+        
+
+    }
+
+}

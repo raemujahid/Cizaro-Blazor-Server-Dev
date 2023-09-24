@@ -23,7 +23,7 @@
     <main>
         <div class="top-row px-4" style="padding: 43px;">
             <button class="costom_a_tag @(dashboard ? "active_tab" : "")" @onclick="@(() => HandleTab("dashboard"))">Dashboards</button>&nbsp;&nbsp;
-            <button class="costom_a_tag @(reports ? "active_tab" : "")" @onclick="@(() => HandleTab("reports"))">Reports</button>&nbsp;&nbsp;
+            <button class="costom_a_tag  @(reports ? "active_tab" : "")" @onclick="@(() => HandleTab("reports"))">Reports</button>&nbsp;&nbsp;
             <button class="costom_a_tag" @onclick="HandleLogOut">Log Out</button>&nbsp;&nbsp;
             <button class="costom_a_tag @(administrator ? "active_tab" : "")" @onclick="@(() => HandleTab("administrator"))">Administrator</button>
         </div>
@@ -38,7 +38,17 @@
     bool dashboard = false;
     bool reports = false;
     bool administrator = false;
-
+    protected override void OnInitialized()
+    {
+       
+    }
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (firstRender)
+        {
+           
+        }
+    }
     private void HandleLogOut()
     {
         _localstorage.ClearAsync();

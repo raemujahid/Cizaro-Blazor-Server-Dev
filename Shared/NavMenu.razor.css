@@ -1,12 +1,19 @@
 .side-nav-heading {
     color: white;
     text-transform: capitalize;
-    position: relative;
-    left: 19px;
     font-weight: bold;
+    margin-top: 15px;
+    margin-bottom: 17px;
+    position: relative;
+    text-align: center;
+    font-size: 24px;
 }
+.logo-img {
+    width: 240px;
+    margin-top: -41px;
+    left: 23px;
+    position: relative;
 }
-
 .navbar-toggler {
     background-color: rgba(255, 255, 255, 0.1);
 }

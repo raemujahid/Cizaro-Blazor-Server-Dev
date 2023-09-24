@@ -13,4 +13,9 @@
     <PackageReference Include="DevExpress.Blazor" Version="23.1.5" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Pages\Dashboard\" />
+    <Folder Include="Pages\Administrator\" />
+  </ItemGroup>
+
 </Project>
